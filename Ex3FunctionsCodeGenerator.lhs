@@ -34,7 +34,9 @@ function calls)
 >                                     ++ (transExp e2 (nxt:rest))
 >                                     ++ [Sub (Reg nxt) (Reg dst)]
 
-> --transExp (Apply s e) (dst:nxt:rest) = Call function
+> transExp (Apply s e) (dst:rest) = (transExp e (dst:rest))
+>                                 ++ [Mov (Reg dst) (Reg D1)]
+>                                 ++ [Jsr s]
 
 Plus Exp Exp
 Minux Exp Exp
