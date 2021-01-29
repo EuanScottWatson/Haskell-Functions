@@ -27,6 +27,14 @@ function calls)
 > 
 > transExp (Const x) (dst:rest) = [Mov (ImmNum x)(Reg dst)]
 > transExp (Var x) (dst:rest) = [Mov (ImmName x) (Reg dst)]
+> transExp (Plus e1 e2) (dst:nxt:rest) = (transExp e1 (dst:nxt:rest))
+>                                     ++ (transExp e2 (nxt:rest))
+>                                     ++ [Add (Reg nxt) (Reg dst)]
+> transExp (Minus e1 e2) (dst:nxt:rest) = (transExp e1 (dst:nxt:rest))
+>                                     ++ (transExp e2 (nxt:rest))
+>                                     ++ [Sub (Reg nxt) (Reg dst)]
+
+> --transExp (Apply s e) (dst:nxt:rest) = Call function
 
 Plus Exp Exp
 Minux Exp Exp
