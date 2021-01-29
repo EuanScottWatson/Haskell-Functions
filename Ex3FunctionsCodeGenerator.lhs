@@ -17,8 +17,12 @@ Part (1): translate function declaration
 
 Part (2): saving registers
 
-> saveRegs (fst:rest)
->  = [] 
+> saveRegs' [] _ = []
+> saveRegs' (fst:rest) regsNotInUse
+>   | elem fst regsNotInUse = []
+>   | otherwise = [Mov (Reg fst) Push] ++ (saveRegs' rest regsNotInUse)
+> saveRegs regsNotInUse 
+>  = saveRegs' (delete D0 allRegs) regsNotInUse
 
 
 Part (3): translate expression (ie function body, perhaps including
@@ -34,9 +38,12 @@ function calls)
 > transExp (Minus e1 e2) (dst:nxt:rest) = (transExp e2 (nxt:rest))
 >                                     ++ (transExp e1 (dst:nxt:rest))
 >                                     ++ [Sub (Reg nxt) (Reg dst)]
-> transExp (Apply s e) (dst:rest) = (transExp e (dst:rest))
+> transExp (Apply s e) (dst:rest) = (saveRegs (dst:rest))
+>                                 ++ (transExp e (dst:rest))
 >                                 ++ [Mov (Reg dst) (Reg D1)]
 >                                 ++ [Jsr s]
+>                                 ++ [Mov (Reg D0) (Reg dst)]
+>                                 ++ (restoreRegs (dst:rest))
 
 Plus Exp Exp
 Minux Exp Exp
@@ -44,6 +51,10 @@ Apply String Exp
 
 > weight (Const x) = 1
 
+> restoreRegs' [] _ = []
+> restoreRegs' (fst:rest) regsNotInUse
+>   | elem fst regsNotInUse = []
+>   | otherwise = [Mov Pop (Reg fst)] ++ (restoreRegs' rest regsNotInUse)
 > restoreRegs regsNotInUse
->  = []
+>  = restoreRegs' (delete D0 allRegs) regsNotInUse
 
