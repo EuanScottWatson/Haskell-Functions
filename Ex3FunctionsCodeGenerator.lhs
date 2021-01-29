@@ -12,7 +12,7 @@ Fill in the gaps...
 Part (1): translate function declaration
 
 > transFunction (Defun fname paramname body)
->  = [Define fname]
+>  = [Define fname] ++ (transExp body allRegs)
 
 Part (2): saving registers
 
@@ -26,6 +26,11 @@ function calls)
 > transExp :: Exp -> [Register] -> [Instr]
 > 
 > transExp (Const x) (dst:rest) = [Mov (ImmNum x)(Reg dst)]
+> transExp (Var x) (dst:rest) = [Mov (ImmName x) (Reg dst)]
+
+Plus Exp Exp
+Minux Exp Exp
+Apply String Exp
 
 > weight (Const x) = 1
 

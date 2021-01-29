@@ -86,6 +86,7 @@ Feb 2006 Added "instance show Instr" thanks to Dave Ingram
 > instance Show Operand where
 >   show (Reg r) = show r
 >   show (ImmNum i) = "$" ++ show i
+>   show (ImmName x) = x
 
 > data Register = D0 | D1 | D2 | D3 | D4 | D5 | D6 | D7 | A7
 >      deriving (Eq, Show)
