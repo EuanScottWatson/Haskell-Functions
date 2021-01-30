@@ -53,10 +53,9 @@ function calls)
 >       ++ (transExp e1 (dst:nxt:rest))
 >       ++ [Sub (Reg nxt) (Reg dst)]
 > transExp (Apply s e) (dst:rest) = (saveRegs (dst:rest))
->                                 ++ (transExp e (dst:rest))
->                                 ++ [Mov (Reg dst) (Reg D1)]
+>                                 ++ (transExp e (delete D1 allRegs))
+>                                 ++ [Mov (Reg D0) (Reg D1)]
 >                                 ++ [Jsr s]
->                                 ++ [Mov (Reg D0) (Reg dst)]
 >                                 ++ (restoreRegs (dst:rest))
 
 Plus Exp Exp
