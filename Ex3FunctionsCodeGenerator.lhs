@@ -19,7 +19,7 @@ Part (2): saving registers
 
 > saveRegs' [] _ = []
 > saveRegs' (fst:rest) regsNotInUse
->   | elem fst regsNotInUse = [] 
+>   | elem fst regsNotInUse = (saveRegs' rest regsNotInUse) 
 >   | otherwise = [Mov (Reg fst) Push] ++ (saveRegs' rest regsNotInUse)
 > saveRegs regsNotInUse 
 >  = saveRegs' (delete D0 allRegs) regsNotInUse
@@ -40,7 +40,7 @@ function calls)
 >       ++ [Add (Reg nxt) (Reg dst)]
 >   else
 >       (transExp e2 (nxt:rest))
->       ++ (transExp e1 (dst:nxt:rest))
+>       ++ (transExp e1 (dst:rest))
 >       ++ [Add (Reg nxt) (Reg dst)]
 > transExp (Minus e1 e2) (dst:nxt:rest) =
 >   if (weight e1) > (weight e2)
@@ -50,13 +50,14 @@ function calls)
 >       ++ [Sub (Reg nxt) (Reg dst)]
 >   else
 >       (transExp e2 (nxt:rest))
->       ++ (transExp e1 (dst:nxt:rest))
+>       ++ (transExp e1 (dst:rest))
 >       ++ [Sub (Reg nxt) (Reg dst)]
 > transExp (Apply s e) (dst:rest) =
 >   (saveRegs (dst:rest))
 >   ++ (transExp e (delete D1 allRegs))
 >   ++ [Mov (Reg D0) (Reg D1)]
 >   ++ [Jsr s]
+>   ++ (if (dst == D0) then [] else [Mov (Reg D0) (Reg dst)])
 >   ++ (restoreRegs (dst:rest))
 
 Plus Exp Exp
@@ -74,13 +75,13 @@ Apply String Exp
 >   where
 >       cost1 = maximum [weight e1, (weight e2) + 1]
 >       cost2 = maximum [(weight e1) + 1, weight e2]
-> weight (Apply s e) = (weight e)
+> weight (Apply s e) = (weight e) + 1
 
 
 > restoreRegs' [] _ = []
 > restoreRegs' (fst:rest) regsNotInUse
->   | elem fst regsNotInUse = []
+>   | elem fst regsNotInUse = (restoreRegs' rest regsNotInUse)
 >   | otherwise = [Mov Pop (Reg fst)] ++ (restoreRegs' rest regsNotInUse)
 > restoreRegs regsNotInUse
->  = restoreRegs' (delete D0 allRegs) regsNotInUse
+>  = restoreRegs' (reverse (delete D0 allRegs)) regsNotInUse
 
