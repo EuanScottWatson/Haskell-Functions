@@ -52,14 +52,15 @@ function calls)
 >       (transExp e2 (nxt:rest))
 >       ++ (transExp e1 (dst:nxt:rest))
 >       ++ [Sub (Reg nxt) (Reg dst)]
-> transExp (Apply s e) (dst:rest) = (saveRegs (dst:rest))
->                                 ++ (transExp e (delete D1 allRegs))
->                                 ++ [Mov (Reg D0) (Reg D1)]
->                                 ++ [Jsr s]
->                                 ++ (restoreRegs (dst:rest))
+> transExp (Apply s e) (dst:rest) =
+>   (saveRegs (dst:rest))
+>   ++ (transExp e (delete D1 allRegs))
+>   ++ [Mov (Reg D0) (Reg D1)]
+>   ++ [Jsr s]
+>   ++ (restoreRegs (dst:rest))
 
 Plus Exp Exp
-Minux Exp Exp
+Minus Exp Exp
 Apply String Exp
 
 > weight :: Exp -> Int
